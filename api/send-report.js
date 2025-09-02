@@ -26,14 +26,14 @@ export default async function handler(req, res) {
     if (!FROM_EMAIL) {
       return res.status(500).json({ error: "FROM_EMAIL missing" });
     }
-
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: false,
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    });
-
+    
+   const transporter = nodemailer.createTransport({
+     host: process.env.SMTP_HOST,
+     port: Number(process.env.SMTP_PORT || 465),
+     secure: String(process.env.SMTP_PORT || "465") === "465", 
+     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
+    
     const attachments = [];
     if (pdfBase64) {
       attachments.push({
@@ -49,6 +49,7 @@ export default async function handler(req, res) {
       from: FROM_EMAIL,
       to,
       bcc: process.env.BCC_EMAIL || undefined,
+      replyTo: FROM_EMAIL,
       subject: subject || "Je resultaten – De Coachtrain",
       html:
         html ||
